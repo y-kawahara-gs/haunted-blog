@@ -10,7 +10,9 @@ class BlogsController < ApplicationController
     @blogs = Blog.search(params[:term]).published.default_order
   end
 
-  def show; end
+  def show
+    secret_blog
+  end
 
   def new
     @blog = Blog.new
@@ -50,6 +52,12 @@ class BlogsController < ApplicationController
 
   def correct_user
     head :not_found unless @blog.user_id == current_user.id
+  end
+
+  def secret_blog
+    return head :not_found if @blog.secret? && !user_signed_in?
+
+    head :not_found if @blog.secret? && @blog.user_id != current_user.id
   end
 
   def blog_params
