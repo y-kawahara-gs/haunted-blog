@@ -6,6 +6,7 @@ class Blog < ApplicationRecord
   has_many :liking_users, class_name: 'User', source: :user, through: :likings
 
   validates :title, :content, presence: true
+  validate :premium_user
 
   scope :published, -> { where('secret = FALSE') }
 
@@ -17,5 +18,11 @@ class Blog < ApplicationRecord
 
   def owned_by?(target_user)
     user == target_user
+  end
+
+  private
+
+  def premium_user
+    errors.add(:random_eyecatch, 'はプレミア会員限定の機能です') if random_eyecatch && !user.premium
   end
 end
