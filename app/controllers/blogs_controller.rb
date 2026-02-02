@@ -55,7 +55,7 @@ class BlogsController < ApplicationController
   end
 
   def correct_user
-    head :not_found unless @blog.user_id == current_user.id
+    current_user.blogs.find(params[:id])
   end
 
   def secret_blog
