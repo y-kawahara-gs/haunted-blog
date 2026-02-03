@@ -25,8 +25,6 @@ class BlogsController < ApplicationController
 
     if @blog.save
       redirect_to blog_url(@blog), notice: 'Blog was successfully created.'
-    elsif @blog.errors[:random_eyecatch].any?
-      render :new, status: :bad_request
     else
       render :new, status: :unprocessable_content
     end
@@ -35,8 +33,6 @@ class BlogsController < ApplicationController
   def update
     if @blog.update(blog_params)
       redirect_to blog_url(@blog), notice: 'Blog was successfully updated.'
-    elsif @blog.errors[:random_eyecatch].any?
-      render :edit, status: :bad_request
     else
       render :edit, status: :unprocessable_content
     end
@@ -63,6 +59,7 @@ class BlogsController < ApplicationController
   end
 
   def blog_params
-    params.expect(blog: %i[title content secret random_eyecatch])
+    allowed = current_user.premium ? %i[title content secret random_eyecatch] : %i[title content secret]
+    params.expect(blog: allowed)
   end
 end
