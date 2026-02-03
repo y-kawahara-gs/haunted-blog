@@ -59,9 +59,7 @@ class BlogsController < ApplicationController
   end
 
   def secret_blog
-    return head :not_found if @blog.secret? && !user_signed_in?
-
-    head :not_found if @blog.secret? && @blog.user_id != current_user.id
+    Blog.where(secret: false).or(Blog.where(user_id: current_user&.id)).find(params[:id])
   end
 
   def blog_params
