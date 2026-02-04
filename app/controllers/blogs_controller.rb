@@ -55,7 +55,7 @@ class BlogsController < ApplicationController
   end
 
   def secret_blog
-    Blog.where(secret: false).or(Blog.where(user_id: current_user&.id)).find(params[:id])
+    Blog.published.or(Blog.where(user: current_user)).find(params[:id])
   end
 
   def blog_params
