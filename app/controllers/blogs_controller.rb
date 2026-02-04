@@ -4,12 +4,15 @@ class BlogsController < ApplicationController
   skip_before_action :authenticate_user!, only: %i[index show]
 
   before_action :set_blog, only: %i[show edit update destroy]
+  before_action :own_blog, only: %i[edit update destroy]
 
   def index
     @blogs = Blog.search(params[:term]).published.default_order
   end
 
-  def show; end
+  def show
+    readable_blog
+  end
 
   def new
     @blog = Blog.new
@@ -47,7 +50,18 @@ class BlogsController < ApplicationController
     @blog = Blog.find(params[:id])
   end
 
+  def own_blog
+    current_user.blogs.find(params[:id])
+  end
+
+  def readable_blog
+    Blog.published.or(Blog.where(user: current_user)).find(params[:id])
+  end
+
   def blog_params
-    params.expect(blog: %i[title content secret random_eyecatch])
+    general_params = %i[title content secret]
+    option_params = %i[random_eyecatch]
+    allowed = current_user.premium ? general_params.push(option_params) : general_params
+    params.expect(blog: allowed)
   end
 end
