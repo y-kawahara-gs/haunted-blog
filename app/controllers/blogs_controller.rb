@@ -59,7 +59,9 @@ class BlogsController < ApplicationController
   end
 
   def blog_params
-    allowed = current_user.premium ? %i[title content secret random_eyecatch] : %i[title content secret]
+    general_params = %i[title content secret]
+    option_params = %i[random_eyecatch]
+    allowed = current_user.premium ? general_params.push(option_params) : general_params
     params.expect(blog: allowed)
   end
 end
